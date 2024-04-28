@@ -1,0 +1,23 @@
+{
+  "name": "cli_application",
+  "version": "1.0.0",
+  "description": "GoIT_NodeJS_homework_1",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "start:dev": "nodemon index.js",
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MariusBirsan/CLI-application"
+  },
+  "author": "Marius Birsan",
+  "license": "ISC",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "nodemon": "^3.1.0",
+    "yargs": "^17.7.2"
+  }
+}
