@@ -8,14 +8,14 @@ import { writeFile } from "node:fs/promises";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const contactsPath = `${__dirname}\\db\\contacts.json`;
 
-//CRUD
+async function importContacts() {
+  const contacts = await readFile(contactsPath, { encoding: "utf8" });
+  return JSON.parse(contacts);
+}
 
-//READ
 export async function listContacts() {
   try {
-    // console.log("GET Contacts".bgBlue);
-    const contents = await readFile(contactsPath, { encoding: "utf8" });
-    const contacts = JSON.parse(contents);
+    const contacts = await importContacts();
     console.table(contacts);
   } catch (err) {
     console.log("There is an error".bgRed.white);
@@ -23,28 +23,80 @@ export async function listContacts() {
   }
 }
 
-function getContactsById(contactId) {}
+export async function getContactsById(contactId) {
+  try {
+    const contacts = await importContacts();
+    const contact = contacts.filter((contact) =>
+      contactId.includes(contact.id)
+    );
 
-function removeContact(contactId) {}
+    if (!contact) {
+      throw new Error("Contact has not been found!");
+    }
+    const contactInfo = contact[0];
+    console.log(
+      "Contact has been found: ".bgGreen,
+      "\n",
+      "ID:",
+      contactInfo.id,
+      "\n",
+      "name:",
+      contactInfo.name,
+      "\n",
+      "email:",
+      contactInfo.email,
+      "\n",
+      "phone:",
+      contactInfo.phone
+    );
+  } catch (error) {
+    console.log("There is an error".bgRed.white);
+    console.error(error.message);
+  }
+}
+
+export async function removeContact(contactId) {
+  try {
+    const contacts = await importContacts();
+    const filteredContacts = contacts.filter(
+      (contact) => contactId !== contact.id
+    );
+
+    const contact = contacts.filter((contact) =>
+      contactId.includes(contact.id)
+    );
+    if (!contact) {
+      throw new Error("Contact has not been found!");
+    }
+    const parsedContacts = JSON.stringify(filteredContacts);
+    console.log("The contact has been successfully deleted!".bgGreen);
+    await writeFile(contactsPath, parsedContacts);
+  } catch (error) {
+    console.log("There is an error".bgRed.white);
+    console.error(error.message);
+  }
+}
 
 export async function addContact(name, email, phone) {
   try {
-    const contents = await readFile(contactsPath, { encoding: "utf8" });
-    const contacts = JSON.parse(contents);
+    const contacts = await importContacts();
     const newContactId = randomUUID();
     const isValid = name && email && phone;
     if (!isValid) {
       throw new Error("The contact does not have all required parameters");
     }
+
     const newContact = {
       id: newContactId,
-      name: name,
-      email: email,
-      phone: phone,
+      name,
+      email,
+      phone,
     };
+
     contacts.push(newContact);
     const parsedContact = JSON.stringify(contacts);
     await writeFile(contactsPath, parsedContact);
+
     console.log("The contact has been added sucessfully!".bgGreen);
   } catch (error) {
     console.log("There is an error".bgRed.white);
@@ -53,6 +105,6 @@ export async function addContact(name, email, phone) {
 }
 
 // listContacts();
-// getContactsById();
-// removeContact();
-// addContact("Marius", "basd@gmail.com", "0742304959");
+// getContactsById("rsKkOQUi80UsgVPCcLZZW");
+// removeContact("7f876726-5286-4f7b-abb8-c4e24bc44b19");
+// addContact("Mango Fruit", "mango@gmail.com", "(023)");

@@ -1,31 +1,95 @@
-import { addContact, listContacts } from "./contacts.js";
+import {
+  addContact,
+  listContacts,
+  getContactsById,
+  removeContact,
+} from "./contacts.js";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-const argv = yargs(hideBin(process.argv)).argv;
-const action = argv.action;
+const scriptName = "node index.js";
 
-switch (action) {
-  case "list":
-    listContacts();
-    break;
+yargs(hideBin(process.argv))
+  .scriptName(scriptName)
+  .command({
+    command: "list",
+    describe: "List all contacts",
+    handler: () => invokeAction({ action: "list" }),
+  })
+  .command({
+    command: "get <id>",
+    describe: "Get contact by ID",
+    builder: (yargs) => yargs.positional("id", { describe: "Contact ID" }),
+    handler: (argv) => invokeAction({ action: "get", id: argv.id }),
+  })
+  .command({
+    command: "add <name> <email> <phone>",
+    describe: "Add a new contact",
+    builder: (yargs) => {
+      yargs.positional("name", { describe: "Contact name" });
+      yargs.positional("email", { describe: "Contact email" });
+      yargs.positional("phone", { describe: "Contact phone number" });
+    },
+    handler: (argv) =>
+      invokeAction({
+        action: "add",
+        name: argv.name,
+        email: argv.email,
+        phone: argv.phone,
+      }),
+  })
+  .command({
+    command: "remove <id>",
+    describe: "Remove contact by ID",
+    builder: (yargs) => yargs.positional("id", { describe: "Contact ID" }),
+    handler: (argv) => invokeAction({ action: "remove", id: argv.id }),
+  })
+  .demandCommand(1, "You need at least one command before moving on")
+  .strict()
+  .help().argv;
 
-  case "add":
-    if (action === "add") {
-      const hasAllArguments = argv.name && argv.email && argv.phone;
-      if (!hasAllArguments) {
-        console.log(
-          `For adding a new contact we need 'name', 'email' and 'phone'`.bgRed
-        );
+function invokeAction({ action, id, name, email, phone }) {
+  switch (action) {
+    case "list":
+      listContacts();
+      break;
+
+    case "get":
+      const hasId = id;
+      if (!hasId) {
+        console.log(`For searching a contact we need an 'id'!`.bgRed);
       }
-    }
-    addContact(argv.name, argv.email, argv.phone);
-    break;
+      getContactsById(id);
+      break;
 
-  default:
-    console.log(`This command ${action} is not supported`.bgYellow);
+    case "add":
+      if (action === "add") {
+        const hasAllArguments = name && email && phone;
+        if (!hasAllArguments) {
+          console.log(
+            `For adding a new contact we need 'name', 'email' and 'phone'`.bgRed
+          );
+        }
+      }
+      addContact(name, email, phone);
+      break;
+
+    case "remove":
+      const hasID = id;
+      if (!hasID) {
+        console.log(`TO delete a contact we need a valid 'id'!`.bgRed);
+      }
+      removeContact(id);
+      break;
+
+    default:
+      console.log(`This command ${action} is not supported`.bgYellow);
+  }
 }
+
 /*
 node index.js --action list
-node index.js --action add --name Mango --email bgv@gamil.com --phone 0742304959
+node index.js add "Mango Fruit" "mango@test.com" "023 555-2929"
+node index.js get 7f876726-5286-4f7b-abb8-c4e24bc44b19
+node index.js remove 416d2b16-8942-4a52-b491-bee66853d5eb
 */
