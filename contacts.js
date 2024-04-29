@@ -103,8 +103,3 @@ export async function addContact(name, email, phone) {
     console.log(error);
   }
 }
-
-// listContacts();
-// getContactsById("rsKkOQUi80UsgVPCcLZZW");
-// removeContact("7f876726-5286-4f7b-abb8-c4e24bc44b19");
-// addContact("Mango Fruit", "mango@gmail.com", "(023)");

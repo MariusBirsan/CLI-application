@@ -86,10 +86,3 @@ function invokeAction({ action, id, name, email, phone }) {
       console.log(`This command ${action} is not supported`.bgYellow);
   }
 }
-
-/*
-node index.js --action list
-node index.js add "Mango Fruit" "mango@test.com" "023 555-2929"
-node index.js get 7f876726-5286-4f7b-abb8-c4e24bc44b19
-node index.js remove 416d2b16-8942-4a52-b491-bee66853d5eb
-*/
